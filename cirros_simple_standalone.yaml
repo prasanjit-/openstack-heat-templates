@@ -1,0 +1,32 @@
+heat_template_version: 2013-05-23
+
+description: |
+  The heat template is used to demo the 'console_urls' attribute
+  of OS::Nova::Server. -- Prasanjit Singh
+parameters:
+  image: 
+    type: string
+    default: cirros
+  flavor:
+    type: string
+    default: std.nano
+
+resources:
+  server:
+    type: OS::Nova::Server
+    properties:
+      image: { get_param: image }
+      flavor: { get_param: flavor }
+      networks:
+      - port: {get_resource: vm_port}
+  vm_port:
+    properties:
+      fixed_ips:
+      - {subnet_id: provider}
+      network_id: provider
+    type: OS::Neutron::Port  
+
+outputs:
+  all_console_urls:
+    value: { get_attr: [server, console_urls] }
+    description: all available console URLs for the server
